@@ -70,8 +70,21 @@ def evaluate(line):
     # handle lists
     if line[0]=='{':
         variables[line[line.index('→')+1:].strip()] = eval('['+line[1:line.index('→')]+']', variables)
-        print(eval('['+line[1:line.index('→')]+']', variables))
-
+        # print(eval('['+line[1:line.index('→')]+']', variables))
+    # handle strings
+    elif line[0] == '"':
+        variables[line[line.index('→')+1:].strip()] = str(line[1:line.index('→')])
+    # handle matrices
+    elif line[0]=='[' and '→' in line:
+        new = ''
+        mat = line[1:line.index('→')]
+        for i in range(len(mat)):
+            if i < len(mat) -1 and mat[i] == ']' and mat[i+1] == '[':
+                new += '],'
+            else:
+                new += mat[i]
+        new += ']'
+        variables[line[line.index('→') + 1:].strip()] = eval('['+new+']')
     elif '→' in line:
         variables[line[line.index('→') + 1:].strip()] = eval(line[:line.index('→')], variables)
     elif 'Disp' in line:
@@ -110,11 +123,22 @@ def compiler(src:str):
 # :Disp A + B
 # :Input C
 # :Disp A + B + C
+#'''
 
 
-# '''
 src='''
-:1→A
-:{1,4,3,A→L1
+:"HELLO→A
+:Disp A
 '''
 compiler(src)
+
+
+# a = '[1,1,1][2,2,3][5,1,5]'
+# new = ''
+# for i in range(len(a)):
+#     if i < len(a) -1 and a[i] == ']' and a[i+1] == '[':
+#         new += '],'
+#     else:
+#         new += a[i]
+
+# print(eval('['+new+']'))
