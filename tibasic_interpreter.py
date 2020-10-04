@@ -3,8 +3,8 @@
 # Built by Jack Donofrio  #
 # Very limited right now  #
 # # # # # # # # # # # # # # 
+import math
 
-# If it doesn't work at first, don't give up
 # This will definitely be a long-term project
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -66,8 +66,27 @@ matrix_stack = []
 
 variables = {}
 
+# decided to write my own sqrt(x) function 
+def sqrt(x):
+    low, high = 0, x
+    while low <= high:
+        mid = (low + high) / 2
+        if abs(mid * mid - x) < 0.00000001:
+            return round(mid,9)
+        elif mid * mid > x:
+            high = mid
+        else:
+            low = mid
+    return -1
+variables['sqrt'] = sqrt
+
 def evaluate(line):
+    # if 'sin' in line:
+    #     line = line.replace('sin','math.sin')
+    # print(line)
     # handle lists
+    if '√' in line:
+        line = line.replace('√','sqrt')
     if line[0]=='{':
         variables[line[line.index('→')+1:].strip()] = eval('['+line[1:line.index('→')]+']', variables)
         # print(eval('['+line[1:line.index('→')]+']', variables))
@@ -89,7 +108,10 @@ def evaluate(line):
         variables[line[line.index('→') + 1:].strip()] = eval(line[:line.index('→')], variables)
     elif 'Disp' in line:
         val = eval(line[line.index('Disp') + 4:],variables)
-        print(val)
+        if type(val) == tuple:
+            [print(x,end=' ') for x in val]
+        else:
+            print(val)
         # if type(val) == str:
         #     print(val)
         # else:
@@ -116,22 +138,21 @@ def compiler(src:str):
 # :Input "Z2=",F
 # :Disp "DIST=",pow(pow(A-C,2) + pow(B-D,2) + pow(E-F,2), 0.5)
 # '''
-# src = '''
 
+# src = '''
 # :5→A
 # :(2+2+A)*5→B
 # :Disp A + B
 # :Input C
 # :Disp A + B + C
-#'''
-
+# '''
 
 src='''
-:"HELLO→A
+:√(900)→A
 :Disp A
 '''
-compiler(src)
 
+compiler(src)
 
 # a = '[1,1,1][2,2,3][5,1,5]'
 # new = ''
